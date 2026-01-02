@@ -1,0 +1,15 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Windows and Doors Summary",
+        "description": "Select which doors, windows, and optional special openings should be monitored.",
+        "data": {
+          "doors": "Door sensors",
+          "windows": "Window sensors",
+          "special_openings": "Special openings (optional)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Oversigt over døre og vinduer",
+        "description": "Vælg hvilke døre, vinduer og eventuelle særlige åbninger der skal overvåges.",
+        "data": {
+          "doors": "Dørsensorer",
+          "windows": "Vinduesensorer",
+          "special_openings": "Særlige åbninger (valgfrit)"
+        }
+      }
+    }
+  }
+}
