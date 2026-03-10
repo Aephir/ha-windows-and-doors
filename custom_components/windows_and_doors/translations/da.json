@@ -29,12 +29,14 @@
       "special": {
         "title": "Opdater særlige åbninger",
         "data": {
-          "special_openings": "Særlige åbninger (valgfrit)"
+          "special_entities": "Sensorer for særlige åbninger (valgfrit)",
+          "special_names": "Navne på særlige åbninger (kommasepareret, samme rækkefølge som sensorer)"
         }
       }
     },
     "error": {
-      "duplicate_names": "Navne på særlige åbninger skal være unikke."
+      "duplicate_names": "Navne på særlige åbninger skal være unikke.",
+      "special_count_mismatch": "Antallet af navne skal matche antallet af valgte sensorer."
     }
   }
 }

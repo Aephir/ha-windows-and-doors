@@ -4,15 +4,8 @@ import voluptuous as vol
 
 from .const import DOMAIN, CONF_DOORS, CONF_WINDOWS, CONF_SPECIAL
 
-
-SPECIAL_SCHEMA = vol.Schema(
-    {
-        vol.Required("entity"): selector.EntitySelector(
-            selector.EntitySelectorConfig(domain="binary_sensor")
-        ),
-        vol.Required("name"): str,
-    }
-)
+CONF_SPECIAL_ENTITIES = "special_entities"
+CONF_SPECIAL_NAMES = "special_names"
 
 
 class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -42,7 +35,6 @@ class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                             domain="binary_sensor", multiple=True
                         )
                     ),
-                    vol.Optional(CONF_SPECIAL): [SPECIAL_SCHEMA],
                 }
             ),
         )
@@ -109,15 +101,32 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_special(self, user_input=None):
         if user_input is not None:
-            names = [i["name"] for i in user_input.get(CONF_SPECIAL, [])]
-            if len(names) != len(set(names)):
+            entities = user_input.get(CONF_SPECIAL_ENTITIES, [])
+            names = [
+                name.strip()
+                for name in user_input.get(CONF_SPECIAL_NAMES, "").split(",")
+                if name.strip()
+            ]
+
+            if len(entities) != len(names):
+                return self.async_show_form(
+                    step_id="special",
+                    errors={"base": "special_count_mismatch"},
+                    data_schema=self._special_schema(user_input),
+                )
+
+            casefolded_names = [name.casefold() for name in names]
+            if len(casefolded_names) != len(set(casefolded_names)):
                 return self.async_show_form(
                     step_id="special",
                     errors={"base": "duplicate_names"},
-                    data_schema=self._special_schema(),
+                    data_schema=self._special_schema(user_input),
                 )
 
-            self.options[CONF_SPECIAL] = user_input.get(CONF_SPECIAL, [])
+            self.options[CONF_SPECIAL] = [
+                {"entity": entity_id, "name": name}
+                for entity_id, name in zip(entities, names)
+            ]
             return self.async_create_entry(title="", data=self.options)
 
         return self.async_show_form(
@@ -125,14 +134,34 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
             data_schema=self._special_schema(),
         )
 
-    def _special_schema(self):
+    def _special_schema(self, user_input=None):
+        special_items = self.options.get(
+            CONF_SPECIAL, self.data.get(CONF_SPECIAL, [])
+        )
+        default_entities = [item["entity"] for item in special_items]
+        default_names = ", ".join(item["name"] for item in special_items)
+
+        if user_input is not None:
+            default_entities = user_input.get(
+                CONF_SPECIAL_ENTITIES, default_entities
+            )
+            default_names = user_input.get(
+                CONF_SPECIAL_NAMES, default_names
+            )
+
         return vol.Schema(
             {
                 vol.Optional(
-                    CONF_SPECIAL,
-                    default=self.options.get(
-                        CONF_SPECIAL, self.data.get(CONF_SPECIAL, [])
-                    ),
-                ): [SPECIAL_SCHEMA]
+                    CONF_SPECIAL_ENTITIES,
+                    default=default_entities,
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(
+                        domain="binary_sensor", multiple=True
+                    )
+                ),
+                vol.Optional(
+                    CONF_SPECIAL_NAMES,
+                    default=default_names,
+                ): selector.TextSelector(),
             }
         )

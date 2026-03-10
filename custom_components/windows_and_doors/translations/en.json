@@ -29,12 +29,14 @@
       "special": {
         "title": "Update special openings",
         "data": {
-          "special_openings": "Special openings (optional)"
+          "special_entities": "Special opening sensors (optional)",
+          "special_names": "Special opening names (comma-separated, same order as sensors)"
         }
       }
     },
     "error": {
-      "duplicate_names": "Special opening names must be unique."
+      "duplicate_names": "Special opening names must be unique.",
+      "special_count_mismatch": "Number of names must match number of selected sensors."
     }
   }
 }
