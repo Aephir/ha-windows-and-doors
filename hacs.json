@@ -1,6 +1,6 @@
 {
   "name": "Windows and Doors Summary",
   "content_in_root": false,
-  "domains": ["binary_sensor"],
+  "domain": "windows_and_doors",
   "render_readme": true
 }

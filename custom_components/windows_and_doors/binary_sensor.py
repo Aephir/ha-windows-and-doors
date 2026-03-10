@@ -12,7 +12,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class WindowsDoorsBinarySensor(RestoreEntity, BinarySensorEntity):
     _attr_name = "Open doors and windows"
     _attr_device_class = "opening"
-    _attr_icon = "custom:windows-and-doors"
 
     def __init__(self, coordinator, entry):
         self.coordinator = coordinator

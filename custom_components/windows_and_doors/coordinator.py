@@ -18,6 +18,7 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
 
         self.last_door_opened = None
         self.last_door_opened_at = None
+        self._unsub_state_change = None
 
     async def async_initialize(self):
         entities = (
@@ -26,11 +27,16 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
             + [i["entity"] for i in self.special]
         )
 
-        async_track_state_change_event(
+        self._unsub_state_change = async_track_state_change_event(
             self.hass, entities, self._state_changed
         )
 
         self.async_set_updated_data(self._collect())
+
+    def async_stop(self):
+        if self._unsub_state_change is not None:
+            self._unsub_state_change()
+            self._unsub_state_change = None
 
     def restore(self, state):
         if not state:

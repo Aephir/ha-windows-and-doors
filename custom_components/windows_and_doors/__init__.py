@@ -24,6 +24,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entry, ["binary_sensor"]
     )
     if unload_ok:
+        coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
+        coordinator.async_stop()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok

@@ -3,6 +3,7 @@
   "name": "Windows and Doors Summary",
   "version": "1.2.0",
   "documentation": "https://github.com/Aephir/ha-windows-and-doors",
+  "issue_tracker": "https://github.com/Aephir/ha-windows-and-doors/issues",
   "config_flow": true,
   "iot_class": "local_push",
   "codeowners": ["@Aephir"]

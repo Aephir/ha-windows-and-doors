@@ -11,5 +11,30 @@
         }
       }
     }
+  },
+  "options": {
+    "step": {
+      "doors": {
+        "title": "Opdater dørsensorer",
+        "data": {
+          "doors": "Dørsensorer"
+        }
+      },
+      "windows": {
+        "title": "Opdater vinduessensorer",
+        "data": {
+          "windows": "Vinduessensorer"
+        }
+      },
+      "special": {
+        "title": "Opdater særlige åbninger",
+        "data": {
+          "special_openings": "Særlige åbninger (valgfrit)"
+        }
+      }
+    },
+    "error": {
+      "duplicate_names": "Navne på særlige åbninger skal være unikke."
+    }
   }
 }

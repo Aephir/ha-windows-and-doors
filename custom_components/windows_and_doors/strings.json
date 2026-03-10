@@ -11,5 +11,30 @@
         }
       }
     }
+  },
+  "options": {
+    "step": {
+      "doors": {
+        "title": "Update door sensors",
+        "data": {
+          "doors": "Door sensors"
+        }
+      },
+      "windows": {
+        "title": "Update window sensors",
+        "data": {
+          "windows": "Window sensors"
+        }
+      },
+      "special": {
+        "title": "Update special openings",
+        "data": {
+          "special_openings": "Special openings (optional)"
+        }
+      }
+    },
+    "error": {
+      "duplicate_names": "Special opening names must be unique."
+    }
   }
 }
