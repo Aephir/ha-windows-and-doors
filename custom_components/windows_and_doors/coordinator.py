@@ -1,3 +1,5 @@
+import logging
+
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
@@ -5,11 +7,12 @@ from homeassistant.util import dt as dt_util
 from .const import CONF_DOORS, CONF_WINDOWS, CONF_SPECIAL
 
 OPEN_STATES = {"on", "open", "opening"}
+_LOGGER = logging.getLogger(__name__)
 
 
 class WindowsDoorsCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, entry):
-        super().__init__(hass, None, name="Windows and Doors Coordinator")
+        super().__init__(hass, _LOGGER, name="Windows and Doors Coordinator")
         self.entry = entry
 
         self.doors = entry.options.get(CONF_DOORS, entry.data[CONF_DOORS])
