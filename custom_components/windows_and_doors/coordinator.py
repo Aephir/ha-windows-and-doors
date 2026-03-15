@@ -1,5 +1,6 @@
 import logging
 
+from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
@@ -51,6 +52,7 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
         self.last_door_opened = state.attributes.get("last_door_opened")
         self.last_door_opened_at = state.attributes.get("door_opened_at")
 
+    @callback
     def _state_changed(self, event):
         new = event.data.get("new_state")
         if not new:
