@@ -4,7 +4,7 @@
   "codeowners": ["@Aephir"],
   "config_flow": true,
   "documentation": "https://github.com/Aephir/ha-windows-and-doors",
-  "issue_tracker": "https://github.com/Aephir/ha-windows-and-doors/issues",
   "iot_class": "local_push",
+  "issue_tracker": "https://github.com/Aephir/ha-windows-and-doors/issues",
   "version": "1.2.5"
 }
