@@ -11,11 +11,21 @@ CONF_SPECIAL_NAMES = "special_names"
 class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
+    def _default_special_items(self, entity_ids):
+        items = []
+        for entity_id in entity_ids:
+            state = self.hass.states.get(entity_id)
+            name = state.name if state else entity_id.rsplit(".", 1)[-1].replace("_", " ").title()
+            items.append({"entity": entity_id, "name": name})
+        return items
+
     async def async_step_user(self, user_input=None):
         await self.async_set_unique_id(DOMAIN)
         self._abort_if_unique_id_configured()
 
         if user_input:
+            special_entities = user_input.get(CONF_SPECIAL, [])
+            user_input[CONF_SPECIAL] = self._default_special_items(special_entities)
             return self.async_create_entry(
                 title="Windows and Doors Summary",
                 data=user_input,
@@ -31,6 +41,11 @@ class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         )
                     ),
                     vol.Required(CONF_WINDOWS): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain="binary_sensor", multiple=True
+                        )
+                    ),
+                    vol.Optional(CONF_SPECIAL, default=[]): selector.EntitySelector(
                         selector.EntitySelectorConfig(
                             domain="binary_sensor", multiple=True
                         )

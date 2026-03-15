@@ -15,9 +15,13 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
         super().__init__(hass, _LOGGER, name="Windows and Doors Coordinator")
         self.entry = entry
 
-        self.doors = entry.options.get(CONF_DOORS, entry.data[CONF_DOORS])
-        self.windows = entry.options.get(CONF_WINDOWS, entry.data[CONF_WINDOWS])
         self.special = entry.options.get(CONF_SPECIAL, entry.data.get(CONF_SPECIAL, []))
+        special_entity_ids = {item["entity"] for item in self.special}
+
+        configured_doors = entry.options.get(CONF_DOORS, entry.data[CONF_DOORS])
+        configured_windows = entry.options.get(CONF_WINDOWS, entry.data[CONF_WINDOWS])
+        self.doors = [entity_id for entity_id in configured_doors if entity_id not in special_entity_ids]
+        self.windows = [entity_id for entity_id in configured_windows if entity_id not in special_entity_ids]
 
         self.last_door_opened = None
         self.last_door_opened_at = None
