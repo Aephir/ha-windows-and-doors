@@ -9,9 +9,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = WindowsDoorsCoordinator(hass, entry)
     await coordinator.async_initialize()
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        DATA_COORDINATOR: coordinator
-    }
+    entry.runtime_data = {DATA_COORDINATOR: coordinator}
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entry.runtime_data
 
     await hass.config_entries.async_forward_entry_setups(
         entry, ["binary_sensor"]
@@ -24,8 +23,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entry, ["binary_sensor"]
     )
     if unload_ok:
-        coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
+        coordinator = entry.runtime_data[DATA_COORDINATOR]
         coordinator.async_stop()
-        hass.data[DOMAIN].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(entry.entry_id, None)
 
     return unload_ok

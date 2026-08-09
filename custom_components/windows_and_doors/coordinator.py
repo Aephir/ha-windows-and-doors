@@ -6,8 +6,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from .const import CONF_DOORS, CONF_WINDOWS, CONF_SPECIAL
+from .state_utils import get_entity_status, is_entity_open
 
-OPEN_STATES = {"on", "open", "opening"}
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -58,7 +58,7 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
         if not new:
             return
 
-        if new.entity_id in self.doors and new.state in OPEN_STATES:
+        if new.entity_id in self.doors and is_entity_open(new.entity_id, new.state):
             self.last_door_opened = new.name
             self.last_door_opened_at = dt_util.now().isoformat(timespec="seconds")
 
@@ -70,24 +70,19 @@ class WindowsDoorsCoordinator(DataUpdateCoordinator):
 
         for e in self.doors:
             s = self.hass.states.get(e)
-            if s and s.state in OPEN_STATES:
+            if s and is_entity_open(e, s.state):
                 open_doors.append(s.name)
 
         for e in self.windows:
             s = self.hass.states.get(e)
-            if s and s.state in OPEN_STATES:
+            if s and is_entity_open(e, s.state):
                 open_windows.append(s.name)
 
         special_attrs = {}
         for item in self.special:
             key = item["name"].lower().replace(" ", "_")
             s = self.hass.states.get(item["entity"])
-            if not s:
-                special_attrs[key] = "Unknown"
-            elif s.state in OPEN_STATES:
-                special_attrs[key] = "Open"
-            else:
-                special_attrs[key] = "Closed"
+            special_attrs[key] = get_entity_status(item["entity"], s.state if s else None)
 
         return {
             "number_of_doors": len(open_doors),

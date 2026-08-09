@@ -37,17 +37,17 @@ class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_DOORS): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="binary_sensor", multiple=True
+                            domain=["binary_sensor", "cover"], multiple=True
                         )
                     ),
                     vol.Required(CONF_WINDOWS): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="binary_sensor", multiple=True
+                            domain=["binary_sensor", "cover"], multiple=True
                         )
                     ),
                     vol.Optional(CONF_SPECIAL, default=[]): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="binary_sensor", multiple=True
+                            domain=["binary_sensor", "cover"], multiple=True
                         )
                     ),
                 }
@@ -84,7 +84,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                         ),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="binary_sensor", multiple=True
+                            domain=["binary_sensor", "cover"], multiple=True
                         )
                     )
                 }
@@ -107,7 +107,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                         ),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="binary_sensor", multiple=True
+                            domain=["binary_sensor", "cover"], multiple=True
                         )
                     )
                 }
@@ -171,7 +171,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                     default=default_entities,
                 ): selector.EntitySelector(
                     selector.EntitySelectorConfig(
-                        domain="binary_sensor", multiple=True
+                        domain=["binary_sensor", "cover"], multiple=True
                     )
                 ),
                 vol.Optional(

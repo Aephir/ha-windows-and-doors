@@ -1,4 +1,4 @@
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -12,7 +12,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class WindowsDoorsBinarySensor(CoordinatorEntity, RestoreEntity, BinarySensorEntity):
     _attr_name = "Open doors and windows"
-    _attr_device_class = "opening"
+    _attr_device_class = BinarySensorDeviceClass.OPENING
 
     def __init__(self, coordinator, entry):
         super().__init__(coordinator)
