@@ -1,4 +1,5 @@
 from homeassistant import config_entries
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import selector
 import voluptuous as vol
 
@@ -19,6 +20,47 @@ class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             items.append({"entity": entity_id, "name": name})
         return items
 
+    def _entity_selector_config(self, preferred_type=None):
+        entity_ids = self._sorted_entity_ids(preferred_type)
+        return selector.EntitySelectorConfig(
+            domain=["binary_sensor", "cover"],
+            multiple=True,
+            include_entities=entity_ids,
+        )
+
+    def _sorted_entity_ids(self, preferred_type=None):
+        registry = er.async_get(self.hass)
+        entity_ids = [
+            entity_id
+            for entity_id in self.hass.states.async_entity_ids()
+            if entity_id.split(".", 1)[0] in {"binary_sensor", "cover"}
+        ]
+
+        def score(entity_id):
+            entry = registry.async_get(entity_id)
+            name = ""
+            if entry:
+                name = (entry.original_name or entry.name or entity_id).lower()
+            entity_text = f"{entity_id} {name}".lower()
+
+            if preferred_type == "door":
+                if entry and entry.device_class in {"door", "garage_door"}:
+                    return (0, entity_id)
+                if "door" in entity_text:
+                    return (1, entity_id)
+                return (2, entity_id)
+
+            if preferred_type == "window":
+                if entry and entry.device_class == "window":
+                    return (0, entity_id)
+                if "window" in entity_text:
+                    return (1, entity_id)
+                return (2, entity_id)
+
+            return (0, entity_id)
+
+        return [entity_id for entity_id in sorted(entity_ids, key=score)]
+
     async def async_step_user(self, user_input=None):
         await self.async_set_unique_id(DOMAIN)
         self._abort_if_unique_id_configured()
@@ -36,19 +78,13 @@ class WindowsDoorsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_DOORS): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["binary_sensor", "cover"], multiple=True
-                        )
+                        self._entity_selector_config("door")
                     ),
                     vol.Required(CONF_WINDOWS): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["binary_sensor", "cover"], multiple=True
-                        )
+                        self._entity_selector_config("window")
                     ),
                     vol.Optional(CONF_SPECIAL, default=[]): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["binary_sensor", "cover"], multiple=True
-                        )
+                        self._entity_selector_config()
                     ),
                 }
             ),
@@ -83,9 +119,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                             CONF_DOORS, self.data.get(CONF_DOORS, [])
                         ),
                     ): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["binary_sensor", "cover"], multiple=True
-                        )
+                        self._entity_selector_config("door")
                     )
                 }
             ),
@@ -106,9 +140,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                             CONF_WINDOWS, self.data.get(CONF_WINDOWS, [])
                         ),
                     ): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["binary_sensor", "cover"], multiple=True
-                        )
+                        self._entity_selector_config("window")
                     )
                 }
             ),
@@ -170,9 +202,7 @@ class WindowsDoorsOptionsFlow(config_entries.OptionsFlow):
                     CONF_SPECIAL_ENTITIES,
                     default=default_entities,
                 ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["binary_sensor", "cover"], multiple=True
-                    )
+                    self._entity_selector_config()
                 ),
                 vol.Optional(
                     CONF_SPECIAL_NAMES,
